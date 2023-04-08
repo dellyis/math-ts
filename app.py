@@ -17,8 +17,9 @@ results = [
 @app.errorhandler(403)
 def not_enough_perms_err(err):
     return render_template(
-        "error.html", description="Недостаточно прав для выполнения данного действия; "
-                                  "Расскажите организатору о том, как вы сюда попали :)"
+        "error.html",
+        description="Недостаточно прав для выполнения данного действия; "
+        "Расскажите организатору о том, как вы сюда попали :)",
     )
 
 
