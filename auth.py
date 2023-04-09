@@ -5,7 +5,7 @@ from db import session, User
 
 def auth_required(get_account: bool = False):
     def decorator(func):
-        def wrapper(*args, **kwargs):
+        async def wrapper(*args, **kwargs):
             token = request.cookies.get("access_token")
 
             if not token:
@@ -17,9 +17,9 @@ def auth_required(get_account: bool = False):
                 return redirect(f"/login?redirect_uri={request.full_path}")
 
             if get_account:
-                return func(account=account, *args, **kwargs)
+                return await func(account=account, *args, **kwargs)
 
-            return func(*args, **kwargs)
+            return await func(*args, **kwargs)
 
         setattr(wrapper, "__name__", func.__name__)
 

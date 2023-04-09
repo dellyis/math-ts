@@ -23,12 +23,12 @@ results = [
 
 
 @app.route("/")
-def index():
+async def index():
     return render_template("index.html")
 
 
 @app.route("/leaders")
-def leaders():
+async def leaders():
     return render_template(
         "leaders.html",
         results=results,
@@ -38,7 +38,7 @@ def leaders():
 
 @app.route("/profile")
 @auth_required(True)
-def profile(account: User):
+async def profile(account: User):
     return render_template(
         "profile.html",
         data={
@@ -48,12 +48,12 @@ def profile(account: User):
 
 
 @app.route("/login", methods=["GET"])
-def login_page():
+async def login_page():
     return render_template("login.html", **dict(request.args))
 
 
 @app.route("/auth/login", methods=["POST"])
-def login():
+async def login():
     login = request.form.get("login")
     password = request.form.get("password")
     account = session.query(User).filter_by(login=login).first()
@@ -67,7 +67,7 @@ def login():
 
 
 @app.route("/auth/register", methods=["POST"])
-def register():
+async def register():
     name = request.form.get("name")
     login = request.form.get("login")
     email = request.form.get("email")
