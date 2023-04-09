@@ -2,4 +2,7 @@
 venv
 __pycache__
 tests/
+
 *.db
+
+config.py
