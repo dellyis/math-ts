@@ -14,7 +14,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     login = Column(String, unique=True)
-    perms = Column(Integer)
+    email = Column(String)
     password_hash = Column(String(100), nullable=False)
     access_token = Column(String(32), unique=True, nullable=True)
 
@@ -28,7 +28,7 @@ class User(Base):
             "id": self.id,
             "name": self.name,
             "login": self.login,
-            "perms": self.perms
+            "email": self.email,
         }
 
     @password.setter
@@ -36,7 +36,7 @@ class User(Base):
         self.password_hash = sha256_crypt.hash(password)
 
     def verify_password(self, password):
-        return sha256_crypt.verify(password, self.password_hash)
+        return sha256_crypt.verify(password, self.password_hash)  # type: ignore
 
     def generate_access_token(self):
         self.access_token = secrets.token_hex(16)
