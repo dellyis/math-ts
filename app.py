@@ -22,15 +22,6 @@ results = [
 ]
 
 
-@app.errorhandler(403)
-def not_enough_perms_err(err):
-    return render_template(
-        "error.html",
-        description="Недостаточно прав для выполнения данного действия; "
-        "Расскажите организатору о том, как вы сюда попали :)",
-    )
-
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -52,43 +43,8 @@ def profile(account: User):
         "profile.html",
         data={
             "name": account.name,
-            "perms": account.perms,
-            "orgs": list(
-                map(lambda el: el.json, session.query(User).filter_by(perms=2).all())
-            ),
         },
     )
-
-
-@app.route("/add/org", methods=["POST"])
-@auth_required(True)
-def add_org(account: User):
-    if account.perms != 3:
-        return abort(403)
-    if session.query(User).filter_by(login=request.form.get("login")).all():
-        return abort(333)
-    session.add(
-        User(
-            name=request.form.get("name"),
-            login=request.form.get("login"),
-            password=request.form.get("password"),
-            perms=2,
-        )
-    )
-    session.commit()
-    return redirect("/profile")
-
-
-@app.route("/delete/org/<int:user_id>")
-@auth_required(True)
-def delete_org(account: User, user_id: int):
-    if account.perms != 3:
-        return abort(406)
-    data = session.query(User).filter_by(id=user_id).first()
-    if data:
-        session.delete(data)
-        session.commit()
-    return redirect("/profile")
 
 
 @app.route("/login", methods=["GET"])
