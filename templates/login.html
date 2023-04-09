@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if reg_success is defined %}
+<div class="alert alert-success" role="alert">
+    Вы успешно зарегистрировали! Осталось только войти в аккаунт :)
+</div>
+{% endif %}
+<ul class="nav nav-pills mb-3 justify-content-center hstack gap-3" id="auth" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="tab-link nav-link active" id="pills-login-tab" data-bs-toggle="pill"
+            data-bs-target="#pills-login" type="button" role="tab" aria-controls="pills-login" aria-selected="true">
+            <a href="#" class="link-light text-decoration-none">Вход</a>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="tab-link nav-link" id="pills-register-tab" data-bs-toggle="pill" data-bs-target="#pills-register"
+            type="button" role="tab" aria-controls="pills-register" aria-selected="false">
+            <a href="#reg" class="link-light text-decoration-none">Регистрация</a>
+        </button>
+    </li>
+</ul>
+<div class="tab-content" id="authContent">
+    <div class="tab-pane show active" id="pills-login" role="tabpanel" aria-labelledby="pills-login-tab" tabindex="0">
+        <form action="/auth/login" id="login-form" class="form-floating mx-auto align-middle px-3"
+            style="max-width: 720px" method="post">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="login" placeholder="Логин" required />
+                <label for="login">Логин</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" name="password" placeholder="Пароль" required />
+                <label for="password">Пароль</label>
+            </div>
+            {% if login_err is defined %}
+            <div class="mb-3 text-center text-danger">Логин или пароль неверен</div>
+            {% endif %}
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <span id="loginSpinner" class="spinner-border spinner-border-sm d-none" role="status"
+                        aria-hidden="true"></span>
+                    Войти
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="tab-pane" id="pills-register" role="tabpanel" aria-labelledby="pills-register-tab" tabindex="0">
+        <form action="/auth/register" id="register-form" class="form-floating mx-auto align-middle px-3"
+            style="max-width: 720px" method="post">
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="name" placeholder="Имя" required />
+                <label for="name">Имя</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" name="login" placeholder="Логин" pattern="^[a-z0-9_-]{3,16}$"
+                    title="Логин должен содержать только латинские строчные буквы, цифры, тире и нижнее подчёркивание. Длина от 3 до 16 символов."
+                    required />
+                <label for="login">Логин</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" name="email" placeholder="Электронная почта" required />
+                <label for="email">Электронная почта</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input id="password" type="password" class="form-control" name="password" placeholder="Пароль"
+                    pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{8,}$"
+                    title="Пароль должен содержать только латинские буквы, заглавные, цифры и специальные символы. Длина пароля должна быть не менее 8 символов."
+                    required />
+                <label for="password">Пароль</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input id="confirm-password" type="password" class="form-control" name="confirm-password"
+                    placeholder="Пароль" required />
+                <label for="confirm-password">Повторите пароль</label>
+            </div>
+            {% if reg_err_not_filled is defined %}
+            <div class="mb-3 text-center text-danger">Не все поля заполнены</div>
+            {% elif reg_err_pattern is defined %}
+            <div class="mb-3 text-center text-danger">Обнаружено изменение или ошибка валидации формы!</div>
+            {% elif reg_err_confirm is defined %}
+            <div class="mb-3 text-center text-danger">Пароли не совпадают</div>
+            {% endif %}
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <span id="registerSpinner" class="spinner-border spinner-border-sm d-none" role="status"
+                        aria-hidden="true"></span>
+                    Зарегистрироваться
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        if ($(location).prop('hash') === '#reg') {
+            $('#pills-login').removeClass(['show', 'active'])
+            $('#pills-register').addClass(['show', 'active'])
+            $('#pills-login-tab').removeClass('active')
+            $('#pills-register-tab').addClass('active')
+        }
+        $('#confirm-password').on('input', function () {
+            if ($('#password').val() != $('#confirm-password').val()) {
+                $('#confirm-password').get(0).setCustomValidity('Пароли не совпадают')
+            } else {
+                $('#confirm-password').get(0).setCustomValidity('')
+            }
+        })
+        $('#login-form').ready(function () {
+            var loginForm = document.getElementById("login-form");
+            loginForm.addEventListener("submit", function (event) {
+                event.preventDefault()
+                $("#loginSpinner").removeClass("d-none")
+                loginForm.submit()
+            })
+        })
+        $('#register-form').ready(function () {
+            var registerForm = document.getElementById("register-form");
+            registerForm.addEventListener("submit", function (event) {
+                event.preventDefault()
+                $("#registerSpinner").removeClass("d-none")
+                registerForm.submit()
+            })
+        })
+    });
+</script>
+{% endblock content %}
