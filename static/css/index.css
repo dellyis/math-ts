@@ -1,0 +1,11 @@
+.tab-link {
+  background-color: rgba(var(--bs-tertiary-bg-rgb), 0.5) !important;
+}
+
+.tab-link:not(.active):hover {
+  background-color: rgba(var(--bs-tertiary-bg-rgb), 0.75) !important;
+}
+
+.tab-link.active {
+  background-color: var(--bs-nav-pills-link-active-bg) !important;
+}
