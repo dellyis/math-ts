@@ -1,11 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-{% if reg_success is defined %}
-<div class="alert alert-success" role="alert">
-    Вы успешно зарегистрировали! Осталось только войти в аккаунт :)
-</div>
-{% endif %}
 <ul class="nav nav-pills mb-3 justify-content-center hstack gap-3" id="auth" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="tab-link nav-link active" id="pills-login-tab" data-bs-toggle="pill"
