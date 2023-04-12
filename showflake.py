@@ -10,7 +10,6 @@ class SnowflakeGenerator:
         self._process_ticks: int = 0
 
     def generate(self) -> int:
-        print(time())
         new_process = int(time() * 1000)
 
         if new_process == self._process:
