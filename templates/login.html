@@ -32,7 +32,9 @@
                 <input type="password" class="form-control" name="password" placeholder="Пароль" required />
                 <label for="password">Пароль</label>
             </div>
-            {% if login_err is defined %}
+            {% if login_err_not_filled is defined %}
+            <div class="mb-3 text-center text-danger">Не все поля заполнены</div>
+            {% elif login_err is defined %}
             <div class="mb-3 text-center text-danger">Логин или пароль неверен</div>
             {% endif %}
             <div class="d-grid">
