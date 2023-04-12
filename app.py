@@ -1,11 +1,17 @@
+import asyncio
 import re
 
-from flask import abort, Flask, redirect, render_template, request, make_response
+from quart import Quart, make_response, redirect, render_template, request, session
 
 from auth import auth_required
-from db import session, User
+from config import SECRET_KEY
+from db import User, users
+from showflake import SnowflakeGenerator
 
-app = Flask(__name__)
+app = Quart(__name__)
+app.secret_key = SECRET_KEY
+
+snowflake_generator = SnowflakeGenerator()
 
 login_pattern = re.compile("^[a-z0-9_-]{3,16}$")
 email_pattern = re.compile(
@@ -22,14 +28,19 @@ results = [
 ]
 
 
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+
+
 @app.route("/")
 async def index():
-    return render_template("index.html")
+    return await render_template("index.html")
 
 
 @app.route("/leaders")
 async def leaders():
-    return render_template(
+    return await render_template(
         "leaders.html",
         results=results,
         zip=zip,
@@ -39,7 +50,7 @@ async def leaders():
 @app.route("/profile")
 @auth_required(True)
 async def profile(account: User):
-    return render_template(
+    return await render_template(
         "profile.html",
         data={
             "name": account.name,
@@ -49,45 +60,67 @@ async def profile(account: User):
 
 @app.route("/login", methods=["GET"])
 async def login_page():
-    return render_template("login.html", **dict(request.args))
+    return await render_template("login.html", **dict(request.args))
 
 
 @app.route("/auth/login", methods=["POST"])
 async def login():
-    login = request.form.get("login")
-    password = request.form.get("password")
-    account = session.query(User).filter_by(login=login).first()
-    if account and account.verify_password(password):
-        account.generate_access_token()
-        redirect_uri = request.args.get("redirect_uri", "/profile")
-        response = make_response(redirect(redirect_uri))
-        response.set_cookie("access_token", account.access_token, max_age=43200)  # type: ignore
-        return response
-    return redirect("/login?login_err")
+    form = await request.form
+    login = form.get("login")
+    password = form.get("password")
+
+    if not (login and password):
+        return redirect("/login?login_err_not_filled")
+
+    user = await users.find_by_field(login=login)
+
+    if not user or not User.verify_password(password, user.password):
+        return redirect("/login?login_err")
+
+    async with user.command_maker() as edit_user:
+        edit_user.access_token = User.generate_access_token()
+
+    response = await make_response(redirect("/profile"))
+    response.set_cookie("Authorization", user.access_token)
+    return response
 
 
 @app.route("/auth/register", methods=["POST"])
 async def register():
-    name = request.form.get("name")
-    login = request.form.get("login")
-    email = request.form.get("email")
-    password = request.form.get("password")
-    confirm_password = request.form.get("confirm-password")
-    if not all([name, login, email, password, confirm_password]):
+    form = await request.form
+    name = form.get("name")
+    login = form.get("login")
+    email = form.get("email")
+    password = form.get("password")
+    confirm_password = form.get("confirm-password")
+
+    if not (name and login and email and password and confirm_password):
         return redirect("/login?reg_err_not_filled#reg")
+
     if not all(
         [
-            login_pattern.match(login),  # type: ignore
-            email_pattern.match(email),  # type: ignore
-            password_pattern.match(password),  # type: ignore
+            login_pattern.match(login),
+            email_pattern.match(email),
+            password_pattern.match(password),
         ]
     ):
         return redirect("/login?reg_err_pattern#reg")
+
     if password != confirm_password:
         return redirect("/login?reg_err_confirm#reg")
-    session.add(User(name=name, login=login, email=email, password=password))
-    session.commit()
-    return redirect("/login?reg_success")
+
+    user = await users.find(snowflake_generator.generate())
+
+    async with user.command_maker() as edit_user:
+        edit_user.name = name
+        edit_user.login = login
+        edit_user.email = email
+        edit_user.password = User.get_password_hash(password)
+        edit_user.access_token = User.generate_access_token()
+
+    response = await make_response(redirect("/profile"))
+    response.set_cookie("Authorization", user.access_token)
+    return response
 
 
 if __name__ == "__main__":
