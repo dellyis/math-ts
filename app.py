@@ -38,6 +38,11 @@ async def index():
     return await render_template("index.html")
 
 
+@app.route("/rules")
+async def rules():
+    return await render_template("rules.html")
+
+
 @app.route("/leaders")
 async def leaders():
     return await render_template(
