@@ -1,12 +1,15 @@
 import asyncio
 import re
+from time import time
 
 from quart import Quart, make_response, redirect, render_template, request, session
 
 from auth import auth_required
 from config import SECRET_KEY
-from db import User, users
+from constants import GAMES
+from db import User, games, users
 from showflake import SnowflakeGenerator
+from utils import format_time, format_range
 
 app = Quart(__name__)
 app.secret_key = SECRET_KEY
@@ -18,6 +21,7 @@ email_pattern = re.compile(
     """(?:[a-z0-9!#$%&'*+\=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+\=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"""  # type: ignore
 )
 password_pattern = re.compile("^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).{8,}$")  # type: ignore
+bday_pattern = re.compile("[0-9]{4}-[0-9]{2}-[0-9]{2}")
 
 results = [
     {"name": "Команда 1", "school": "Школа 1", "score": 0},
@@ -28,19 +32,52 @@ results = [
 ]
 
 
+@app.before_serving
+async def on_startup():
+    await games.cache_all()
+
+
 @app.before_request
-def make_session_permanent():
+async def make_session_permanent():
     session.permanent = True
 
 
 @app.route("/")
 async def index():
+    await games.cache_all()
+
     return await render_template("index.html")
 
 
 @app.route("/rules")
 async def rules():
     return await render_template("rules.html")
+
+
+@app.route("/games")
+async def games_page():
+    current_time = time()
+    active_games = []
+    future_games = []
+    completed_games = []
+
+    for game in games.cache.items():
+        if game[1].start < current_time < game[1].start + game[1].duration:
+            active_games.append(game)
+        elif current_time < game[1].start:
+            future_games.append(game)
+        elif game[1].start + game[1].duration < current_time:
+            completed_games.append(game)
+
+    return await render_template(
+        "games.html",
+        active_games=sorted(active_games, key=lambda el: el[1].start),
+        future_games=sorted(future_games, key=lambda el: el[1].start),
+        completed_games=sorted(completed_games, key=lambda el: el[1].start),
+        time_formatter=format_time,
+        range_formatter=format_range,
+        names=GAMES,
+    )
 
 
 @app.route("/leaders")
