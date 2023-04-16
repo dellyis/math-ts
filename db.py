@@ -1,11 +1,12 @@
 import secrets
 from datetime import datetime
+from typing import Set
 
 from passlib.hash import sha256_crypt
 from motor.motor_tornado import MotorClient
 
 from config import MONGO_TOKEN
-from db_core import NiceCollection, NiceDocument, field
+from db_core import NiceCollection, NiceDocument, field, field_with_set
 
 
 class FieldCollectionEngine(NiceCollection):
@@ -45,6 +46,17 @@ class User(NiceDocument):
     def generate_access_token() -> str:
         return secrets.token_hex(16)
 
+
+class Game(NiceDocument):
+    game: int = field()
+    start: int = field()
+    duration: int = field()
+    org: str = field()
+    limits: Set[int] = field_with_set()
+    teams: Set[int] = field_with_set()
+
+
 cluster = MotorClient(MONGO_TOKEN)
 db = cluster["dev"]
 users = FieldCollectionEngine(db["users"], User)
+games = FieldCollectionEngine(db["games"], Game)
