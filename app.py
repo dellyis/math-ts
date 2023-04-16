@@ -96,10 +96,11 @@ async def register():
     name = form.get("name")
     login = form.get("login")
     email = form.get("email")
+    bday = form.get("bday")
     password = form.get("password")
     confirm_password = form.get("confirm-password")
 
-    if not (name and login and email and password and confirm_password):
+    if not (name and login and email and password and confirm_password and bday):
         return redirect("/login?reg_err_not_filled#reg")
 
     if not all(
@@ -107,6 +108,7 @@ async def register():
             login_pattern.match(login),
             email_pattern.match(email),
             password_pattern.match(password),
+            bday_pattern.match(bday),
         ]
     ):
         return redirect("/login?reg_err_pattern#reg")
@@ -120,6 +122,7 @@ async def register():
         edit_user.name = name
         edit_user.login = login
         edit_user.email = email
+        edit_user.bday = User.format_bday(bday)
         edit_user.password = User.get_password_hash(password)
         edit_user.access_token = User.generate_access_token()
 
