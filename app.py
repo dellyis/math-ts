@@ -113,6 +113,11 @@ async def register():
     ):
         return redirect("/login?reg_err_pattern#reg")
 
+    if (await users.find_by_field(login=login)) or (
+        await users.find_by_field(email=email)
+    ):
+        return redirect("/login?reg_err_used#reg")
+
     if password != confirm_password:
         return redirect("/login?reg_err_confirm#reg")
 

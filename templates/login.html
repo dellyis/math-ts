@@ -78,6 +78,8 @@
             <div class="mb-3 text-center text-danger">Не все поля заполнены</div>
             {% elif reg_err_pattern is defined %}
             <div class="mb-3 text-center text-danger">Обнаружено изменение или ошибка валидации формы!</div>
+            {% elif reg_err_used is defined %}
+            <div class="mb-3 text-center text-danger">Такая почта или логин уже зарегистрирована</div>
             {% elif reg_err_confirm is defined %}
             <div class="mb-3 text-center text-danger">Пароли не совпадают</div>
             {% endif %}
