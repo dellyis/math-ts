@@ -1,6 +1,6 @@
-from quart import redirect, request
+from quart import redirect, request, make_response
 
-from db import User, users
+from db import users
 
 
 def auth_required(get_account: bool = False):
@@ -14,7 +14,11 @@ def auth_required(get_account: bool = False):
             account = await users.find_by_field(access_token=token)
 
             if not account:
-                return redirect(f"/login?redirect_uri={request.full_path}")
+                response = await make_response(
+                    redirect(f"/login?redirect_uri={request.full_path}")
+                )
+                response.delete_cookie("Authorization")
+                return response
 
             if get_account:
                 return await func(account=account, *args, **kwargs)
