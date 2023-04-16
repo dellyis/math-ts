@@ -1,4 +1,5 @@
 import secrets
+from datetime import datetime
 
 from passlib.hash import sha256_crypt
 from motor.motor_tornado import MotorClient
@@ -24,6 +25,7 @@ class User(NiceDocument):
     name: str = field()
     login: str = field()
     email: str = field()
+    bday: datetime = field()
     password: str = field()
     access_token: str = field()
 
