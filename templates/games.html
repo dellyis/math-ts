@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if active_games %}
+<h1 class="text-center my-auto mb-3">
+    Активные игры
+</h1>
+{% for game_id, game in active_games %}
+<div class="card mb-3 border-warning">
+    <div class="row g-0">
+        <div class="col-md-2 text-center d-flex">
+            <img src="/static/img/{{ names[game.game][0] }}.svg" class="p-3 m-auto block img-fluid rounded-start"
+                alt="Иконка игры {{ names[game.game][1] }}">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ names[game.game][1] }}</h5>
+                <p class="card-text">Начало: <span class="datetime" data-unix="{{ game.start }}"></span> <br>
+                    Длительность:
+                    {{ time_formatter(game.duration) }} <br> Возврастные ограничения:
+                    {{ range_formatter(game.limits) }} лет</span></p>
+                <p class="card-text"><small class="text-body-secondary">Организатор: {{ game.org }}</small></p>
+                <a class="btn btn-warning" href="/games/{{ game_id }}">Просмотр</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% if future_games %}
+<h1 class="text-center my-auto mb-3">
+    Будущие игры
+</h1>
+{% for game_id, game in future_games %}
+<div class="card mb-3 border-primary">
+    <div class="row g-0">
+        <div class="col-md-2 text-center d-flex">
+            <img src="/static/img/{{ names[game.game][0] }}.svg" class="p-3 m-auto block img-fluid rounded-start"
+                alt="Иконка игры {{ names[game.game][1] }}">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ names[game.game][1] }}</h5>
+                <p class="card-text">Начало: <span class="datetime" data-unix="{{ game.start }}"></span> <br>
+                    Длительность:
+                    {{ time_formatter(game.duration) }} <br> Возврастные ограничения:
+                    {{ range_formatter(game.limits) }} лет</span></p>
+                <p class="card-text"><small class="text-body-secondary">Организатор: {{ game.org }}</small></p>
+                <a class="btn btn-primary" href="/games/{{ game_id }}">Просмотр</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% if completed_games %}
+<h1 class="text-center my-auto mb-3">
+    Прошедшие игры
+</h1>
+{% for game_id, game in completed_games %}
+<div class="card mb-3 border-secondary">
+    <div class="row g-0">
+        <div class="col-md-2 text-center d-flex">
+            <img src="/static/img/{{ names[game.game][0] }}.svg" class="p-3 m-auto block img-fluid rounded-start"
+                alt="Иконка игры {{ names[game.game][1] }}">
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ names[game.game][1] }}</h5>
+                <p class="card-text">Начало: <span class="datetime" data-unix="{{ game.start }}"></span> <br>
+                    Длительность:
+                    {{ time_formatter(game.duration) }} <br> Возврастные ограничения:
+                    {{ range_formatter(game.limits) }} лет</span></p>
+                <p class="card-text"><small class="text-body-secondary">Организатор: {{ game.org }}</small></p>
+                <a class="btn btn-secondary" href="/games/{{ game_id }}">Просмотр</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+<script>
+    $('.datetime').each(function () {
+        var unixTS = $(this).data("unix")
+        console.log(typeof unixTS)
+        var date = new Date(unixTS * 1000)
+        $(this).text(date.toLocaleString());
+    });
+</script>
+{% endblock content %}
