@@ -28,17 +28,20 @@ class User(NiceDocument):
     access_token: str = field()
 
     @staticmethod
-    def generate_access_token():
-        return secrets.token_hex(16)
+    def format_bday(date: str) -> datetime:
+        return datetime.strptime(date, "%Y-%m-%d")
 
     @staticmethod
-    def get_password_hash(password: str):
+    def get_password_hash(password: str) -> str:
         return sha256_crypt.hash(password)
 
     @staticmethod
-    def verify_password(password: str, password_hash: str):
+    def verify_password(password: str, password_hash: str) -> bool:
         return sha256_crypt.verify(password, password_hash)
 
+    @staticmethod
+    def generate_access_token() -> str:
+        return secrets.token_hex(16)
 
 cluster = MotorClient(MONGO_TOKEN)
 db = cluster["dev"]
