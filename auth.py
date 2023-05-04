@@ -1,4 +1,4 @@
-from quart import redirect, request, make_response
+from quart import make_response, redirect, request
 
 from db import users
 
@@ -21,7 +21,7 @@ def auth_required(get_account: bool = False):
                 return response
 
             if get_account:
-                return await func(account=account, *args, **kwargs)
+                return await func(user=account, *args, **kwargs)
 
             return await func(*args, **kwargs)
 
