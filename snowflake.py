@@ -22,3 +22,6 @@ class SnowflakeGenerator:
 
     def created_at(self, snowflake: int) -> datetime:
         return datetime.utcfromtimestamp(((snowflake >> 22) + self.EPOCH) * 0.001)
+
+
+snowflake_generator = SnowflakeGenerator()
