@@ -1,4 +1,4 @@
-from typing import Union, List, Set, Tuple
+from typing import List, Set, Tuple, Union
 
 from pytils import numeral
 
