@@ -16,10 +16,13 @@
             <div class="card-body">
                 <h5 class="card-title">{{ names[game.game][1] }}</h5>
                 <p class="card-text">Начало: <span class="datetime" data-unix="{{ game.start }}"></span> <br>
-                    Длительность:
-                    {{ time_formatter(game.duration) }} <br> Возврастные ограничения:
-                    {{ range_formatter(game.limits) }} лет</span></p>
-                <p class="card-text"><small class="text-body-secondary">Организатор: {{ game.org }}</small></p>
+                    Длительность: {{ time_formatter(game.duration) }} <br>
+                    {% if game.limits.age %}
+                    Возврастные ограничения: {{ range_formatter(game.limits.age) }} лет</span></p>
+                {% endif %}
+                <p class="card-text">
+                    <small class="text-body-secondary">Организатор: {{ game.org.short_name }}</small>
+                </p>
                 <a class="btn btn-warning" href="/games/{{ game_id }}">Просмотр</a>
             </div>
         </div>
@@ -42,10 +45,13 @@
             <div class="card-body">
                 <h5 class="card-title">{{ names[game.game][1] }}</h5>
                 <p class="card-text">Начало: <span class="datetime" data-unix="{{ game.start }}"></span> <br>
-                    Длительность:
-                    {{ time_formatter(game.duration) }} <br> Возврастные ограничения:
-                    {{ range_formatter(game.limits) }} лет</span></p>
-                <p class="card-text"><small class="text-body-secondary">Организатор: {{ game.org }}</small></p>
+                    Длительность: {{ time_formatter(game.duration) }} <br>
+                    {% if game.limits.age %}
+                    Возврастные ограничения: {{ range_formatter(game.limits.age) }} лет</span></p>
+                {% endif %}
+                <p class="card-text">
+                    <small class="text-body-secondary">Организатор: {{ game.org.short_name }}</small>
+                </p>
                 <a class="btn btn-primary" href="/games/{{ game_id }}">Просмотр</a>
             </div>
         </div>
@@ -68,10 +74,13 @@
             <div class="card-body">
                 <h5 class="card-title">{{ names[game.game][1] }}</h5>
                 <p class="card-text">Начало: <span class="datetime" data-unix="{{ game.start }}"></span> <br>
-                    Длительность:
-                    {{ time_formatter(game.duration) }} <br> Возврастные ограничения:
-                    {{ range_formatter(game.limits) }} лет</span></p>
-                <p class="card-text"><small class="text-body-secondary">Организатор: {{ game.org }}</small></p>
+                    Длительность: {{ time_formatter(game.duration) }} <br>
+                    {% if game.limits.age %}
+                    Возврастные ограничения: {{ range_formatter(game.limits.age) }} лет</span></p>
+                {% endif %}
+                <p class="card-text">
+                    <small class="text-body-secondary">Организатор: {{ game.org.short_name }}</small>
+                </p>
                 <a class="btn btn-secondary" href="/games/{{ game_id }}">Просмотр</a>
             </div>
         </div>
