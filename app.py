@@ -12,14 +12,6 @@ app.secret_key = SECRET_KEY
 
 register_blueprints(app)
 
-results = [
-    {"name": "Команда 1", "school": "Школа 1", "score": 0},
-    {"name": "Команда 2", "school": "Школа 2", "score": 0},
-    {"name": "Команда 3", "school": "Школа 3", "score": 0},
-    {"name": "Команда 4", "school": "Школа 4", "score": 0},
-    {"name": "Команда 5", "school": "Школа 5", "score": 0},
-]
-
 
 @app.before_serving
 async def on_startup():
@@ -43,15 +35,6 @@ async def index():
 @app.route("/rules")
 async def rules():
     return await render_template("rules.html")
-
-
-@app.route("/leaders")
-async def leaders():
-    return await render_template(
-        "leaders.html",
-        results=results,
-        zip=zip,
-    )
 
 
 @app.route("/profile")
