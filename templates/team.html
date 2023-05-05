@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="border mb-3 mx-auto flex p-3" style="max-width: 978px;">
+    <h1 class="text-center py-2">Команда: {{ team.name }}</h1>
+    <h3 class="text-center">Участники</h3>
+    <div class="">
+        {% for member in team_members %}
+        <div class="border rounded p-3 my-2 mx-4 d-flex flex-row gap-1" style="height: 64px">
+            <div class="my-auto">{{ member.name }}</div>
+            {% if member.id == team.owner %}
+            <div class="bg-primary rounded my-auto">👑</div>
+            {% elif user.id == team.owner %}
+            <div style="margin-left: auto;"></div>
+            <a href="/teams/{{ team.id }}/kick/{{ member.id }}" class="btn btn-outline-danger btn-sm"
+                data-toggle="tooltip" title="Исключить">
+                <i class="bi bi-x-lg"></i>
+            </a>
+            {% elif member.id == user.id %}
+            <div style="margin-left: auto;"></div>
+            <a href="/teams/{{ team.id }}/kick/{{ member.id }}?self=true" class="btn btn-outline-danger btn-sm"
+                data-toggle="tooltip" title="Покинуть">
+                <i class="bi bi-door-closed"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <hr>
+</div>
+{% endblock content %}
