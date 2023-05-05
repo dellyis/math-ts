@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mb-3 border-warning mx-auto" style="max-width: 978px;">
+    <div class="row g-0">
+        <div class="col-md-2 text-center d-flex">
+            <img src="/static/img/{{ names[game.game][0] }}.svg" class="p-3 m-auto block img-fluid rounded-start"
+                alt="Иконка игры {{ names[game.game][1] }}">
+        </div>
+        <div class="col-md-8 d-flex mb-3">
+            <h1 class="card-title m-auto">{{ names[game.game][1] }}</h1>
+        </div>
+    </div>
+    <ul class="nav nav-pills nav-fill mx-3 gap-3" id="auth" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="tab-link nav-link" id="pills-info-tab" href="/games/{{ game_id }}">Информация
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="tab-link nav-link active" href="#">Заявка
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content m-3" id="authContent">
+        <div class="tab-pane show active fs-5" id="pills-info" role="tabpanel" aria-labelledby="pills-info-tab"
+            tabindex="0">
+            <h3 class="text-center">Ваши команды</h3>
+            {% if user_age not in game.limits.age %}
+            <div class="text-center text-danger">Вы не можете участвовать из-за возвраста</div>
+            {% elif not user_teams %}
+            <div class="text-center text-danger">У вас нет команд, которые подходят по условиям игры.
+                <a class="link-danger" href="/teams/create">Создать?</a>
+            </div>
+            {% else %}
+            <form action="post">
+                <select class="form-select" aria-label="Пример выбора по умолчанию">
+                    <option selected>Откройте это меню выбора</option>
+                    <option value="1">Один</option>
+                    <option value="2">Два</option>
+                    <option value="3">Три</option>
+                </select>
+            </form>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.datetime').each(function () {
+        var unixTS = $(this).data("unix")
+        console.log(typeof unixTS)
+        var date = new Date(unixTS * 1000)
+        $(this).text(date.toLocaleString());
+    });
+</script>
+{% endblock content %}
