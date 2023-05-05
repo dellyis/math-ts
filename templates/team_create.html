@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mb-3 mx-auto flex" style="max-width: 978px;">
+    <h1 class="text-center py-2">Создание команды</h1>
+    <form method="post" id="create-team-form" class="form-floating align-middle p-3">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" name="name" placeholder="Название" maxlength="64" required />
+            <label for="name">Название</label>
+        </div>
+        {% if err_not_filled is defined %}
+        <div class="mb-3 text-center text-danger">Не все поля заполнены</div>
+        {% endif %}
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <span id="createTeamSpinner" class="spinner-border spinner-border-sm d-none" role="status"
+                    aria-hidden="true"></span>
+                Создать
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+
+        $('#create-team-form').ready(function () {
+            var createTeamForm = document.getElementById("create-team-form");
+            createTeamForm.addEventListener("submit", function (event) {
+                event.preventDefault()
+                $("#createTeamSpinner").removeClass("d-none")
+                createTeamForm.submit()
+            })
+        })
+    })
+</script>
+{% endblock content %}
