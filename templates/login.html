@@ -17,8 +17,8 @@
 </ul>
 <div class="tab-content" id="authContent">
     <div class="tab-pane show active" id="pills-login" role="tabpanel" aria-labelledby="pills-login-tab" tabindex="0">
-        <form action="/auth/login" id="login-form" class="form-floating mx-auto align-middle px-3"
-            style="max-width: 720px" method="post">
+        <form action="/auth/login?redirect_uri={{ redirect_uri }}" id="login-form"
+            class="form-floating mx-auto align-middle px-3" style="max-width: 720px" method="post">
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" name="login" placeholder="Логин" required />
                 <label for="login">Логин</label>
@@ -42,8 +42,8 @@
         </form>
     </div>
     <div class="tab-pane" id="pills-register" role="tabpanel" aria-labelledby="pills-register-tab" tabindex="0">
-        <form action="/auth/register" id="register-form" class="form-floating mx-auto align-middle px-3"
-            style="max-width: 720px" method="post">
+        <form action="/auth/register?redirect_uri={{ redirect_uri }}" id="register-form"
+            class="form-floating mx-auto align-middle px-3" style="max-width: 720px" method="post">
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" name="name" placeholder="Имя" required />
                 <label for="name">Имя</label>
