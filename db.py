@@ -38,6 +38,19 @@ class User(NiceDocument):
     password: str = field()
     access_token: str = field()
 
+    @property
+    def json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "login": self.login,
+            "email": self.email,
+            "teams": list(self.teams),
+            "bday": self.bday,
+            "password": self.password,
+            "access_token": self.access_token,
+        }
+
     @staticmethod
     def format_bday(date: str) -> datetime:
         return datetime.strptime(date, "%Y-%m-%d")
@@ -65,6 +78,16 @@ class Team(NiceDocument):
     members: Set[str] = field_with_set()
     invite: str = field()
 
+    @property
+    def json(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "owner": self.owner,
+            "members": list(self.members),
+            "invite": self.invite,
+        }
+
     @staticmethod
     def generate_invite() -> str:
         return secrets.token_hex(16)
@@ -75,12 +98,27 @@ class GameOrg(NiceNesting):
     short_name: str = field()
     site: str = field()
     icon: str = field()
-    email: str = field()
+
+    @property
+    def json(self):
+        return {
+            "name": self.name,
+            "short_name": self.short_name,
+            "site": self.site,
+            "icon": self.icon,
+        }
 
 
 class GameLimits(NiceNesting):
     age: Set[int] = field_with_set()
     team_size: int = field()
+
+    @property
+    def json(self):
+        return {
+            "age": list(self.age),
+            "team_size": self.team_size,
+        }
 
 
 class Game(NiceDocument):
@@ -90,6 +128,18 @@ class Game(NiceDocument):
     org: GameOrg = nesting(GameOrg)
     limits: GameLimits = nesting(GameLimits)
     teams: Set[str] = field_with_set()
+
+    @property
+    def json(self):
+        return {
+            "id": self.id,
+            "game": self.game,
+            "start": self.start,
+            "duration": self.duration,
+            "org": self.org,
+            "limits": self.limits,
+            "teams": list(self.teams),
+        }
 
 
 cluster = MotorClient(MONGO_TOKEN)
