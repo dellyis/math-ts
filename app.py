@@ -1,8 +1,8 @@
 import asyncio
 
-from quart import Quart, render_template, request, session
+from quart import Quart, render_template, request, session, redirect
 
-from auth import auth_required
+from auth import auth_required, verify_auth
 from blueprints import register_blueprints
 from config import SECRET_KEY
 from db import User, games, teams, users
@@ -48,8 +48,11 @@ async def profile(user: User):
     )
 
 
-@app.route("/login", methods=["GET"])
+@app.route("/login")
 async def login_page():
+    if (await verify_auth(request))[0]:
+        return redirect(request.args.get("redirect_uri", "/profile"))
+
     return await render_template("login.html", **dict(request.args))
 
 
