@@ -2,6 +2,7 @@ from quart import Blueprint, redirect, render_template, request
 
 from argsparser import ParsedArg, url_params
 from auth import auth_required
+from constants import HOST
 from db import Team, User, teams, users
 from snowflake import snowflake_generator
 
@@ -48,6 +49,7 @@ async def team_page(user: User, team_id: str):
         team=team,
         team_members=team_members,
         user=user,
+        host=HOST,
     )
 
 
@@ -71,7 +73,7 @@ async def kick_member(
 
     if (
         (self and user.id != member_id)
-        or user.id != team.owner
+        or (not self and user.id == team.owner)
         or member_id == team.owner
     ):
         return await render_template("error.html", description="Недостаточно прав")
