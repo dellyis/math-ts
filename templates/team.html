@@ -3,8 +3,15 @@
 {% block content %}
 <div class="border mb-3 mx-auto flex p-3" style="max-width: 978px;">
     <h1 class="text-center py-2">Команда: {{ team.name }}</h1>
-    <h3 class="text-center">Участники</h3>
-    <div class="">
+    <div class="d-flex flex-row justify-content-center gap-3">
+        <h3 class="text-center">Участники</h3>
+        {% if user.id == team.owner %}
+        <button onclick="copyInvite()" class="btn btn-outline-primary btn-sm my-auto" title="Скопировать приглашение">
+            <i class="bi bi-link-45deg"></i>
+        </button>
+        {% endif %}
+    </div>
+    <div>
         {% for member in team_members %}
         <div class="border rounded p-3 my-2 mx-4 d-flex flex-row gap-1" style="height: 64px">
             <div class="my-auto">{{ member.name }}</div>
@@ -12,20 +19,38 @@
             <div class="bg-primary rounded my-auto">👑</div>
             {% elif user.id == team.owner %}
             <div style="margin-left: auto;"></div>
-            <a href="/teams/{{ team.id }}/kick/{{ member.id }}" class="btn btn-outline-danger btn-sm"
-                data-toggle="tooltip" title="Исключить">
+            <a href="/teams/{{ team.id }}/kick/{{ member.id }}" class="btn btn-outline-danger btn-sm" title="Исключить">
                 <i class="bi bi-x-lg"></i>
             </a>
             {% elif member.id == user.id %}
             <div style="margin-left: auto;"></div>
             <a href="/teams/{{ team.id }}/kick/{{ member.id }}?self=true" class="btn btn-outline-danger btn-sm"
-                data-toggle="tooltip" title="Покинуть">
+                title="Покинуть">
                 <i class="bi bi-door-closed"></i>
             </a>
             {% endif %}
         </div>
         {% endfor %}
     </div>
+    {% if user.id == team.owner %}
     <hr>
+    <h3 class="text-center py-2">Панель управления</h3>
+    {% endif %}
 </div>
+
+{% if user.id == team.owner %}
+<script>
+    function copyInvite() {
+        let invite = "{{ host }}/teams/join/{{ team.invite }}"
+        navigator.clipboard.writeText(invite)
+            .then(() => {
+                alert("Приглашение скопировано");
+            })
+            .catch(() => {
+                alert("Приглашение не было скопировано :(");
+            });
+
+    }
+</script>
+{% endif %}
 {% endblock content %}
