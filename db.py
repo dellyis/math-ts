@@ -1,6 +1,6 @@
 import secrets
 from datetime import datetime
-from typing import Set
+from typing import Dict, Set
 
 from motor.motor_tornado import MotorClient
 from passlib.hash import sha256_crypt
@@ -12,6 +12,7 @@ from db_core import (
     NiceNesting,
     field,
     field_with_set,
+    field_with_nestings,
     nesting,
 )
 
@@ -121,6 +122,22 @@ class GameLimits(NiceNesting):
         }
 
 
+class GameTask(NiceNesting):
+    number: str = field()
+    title: str = field()
+    description: str = field()
+    answer: str = field()
+
+    @property
+    def json(self):
+        return {
+            "number": self.number,
+            "title": self.title,
+            "description": self.description,
+            "answer": self.answer,
+        }
+
+
 class Game(NiceDocument):
     game: int = field()
     start: int = field()
@@ -128,6 +145,7 @@ class Game(NiceDocument):
     org: GameOrg = nesting(GameOrg)
     limits: GameLimits = nesting(GameLimits)
     teams: Set[str] = field_with_set()
+    tasks: Dict[int, GameTask] = field_with_nestings(GameTask)
 
     @property
     def json(self):
@@ -139,6 +157,7 @@ class Game(NiceDocument):
             "org": self.org,
             "limits": self.limits,
             "teams": list(self.teams),
+            "tasks": self.tasks,
         }
 
 
